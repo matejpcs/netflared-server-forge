@@ -1,4 +1,4 @@
-name: Build & Release Forge versions
+name: Build & Release Forge all versions
 
 on:
   workflow_dispatch:
@@ -12,56 +12,99 @@ permissions:
   contents: write
 
 jobs:
-  build-and-release:
-    name: Release ${{ matrix.label }}
+  build:
+    name: Build Forge ${{ matrix.version }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         include:
-          - label: "Forge 1.20.1"
-            ref: "1.20.x"
-            mc: "1.20.1"
-            forge: "47.4.23"
-            java: "17"
-            gradle: "8.8"
-          - label: "Forge 1.21.11"
-            ref: "1.21.x"
-            mc: "1.21.11"
-            forge: "61.2.1"
-            java: "21"
-            gradle: "9.5.1"
-          - label: "Forge 26.2"
-            ref: "26.x"
-            mc: "26.2"
-            forge: "65.0.0"
-            java: "25"
-            gradle: "9.5.0"
+          - version: "1.20"
+            group: "1.20"
+          - version: "1.20.1"
+            group: "1.20"
+          - version: "1.20.2"
+            group: "1.20"
+          - version: "1.20.3"
+            group: "1.20"
+          - version: "1.20.4"
+            group: "1.20"
+          - version: "1.20.5"
+            group: "1.20"
+          - version: "1.20.6"
+            group: "1.20"
+          - version: "1.21"
+            group: "1.21"
+          - version: "1.21.1"
+            group: "1.21"
+          - version: "1.21.2"
+            group: "1.21"
+          - version: "1.21.3"
+            group: "1.21"
+          - version: "1.21.4"
+            group: "1.21"
+          - version: "1.21.5"
+            group: "1.21"
+          - version: "1.21.6"
+            group: "1.21"
+          - version: "1.21.7"
+            group: "1.21"
+          - version: "1.21.8"
+            group: "1.21"
+          - version: "1.21.9"
+            group: "1.21"
+          - version: "1.21.10"
+            group: "1.21"
+          - version: "1.21.11"
+            group: "1.21"
+          - version: "26.1"
+            group: "26"
+          - version: "26.2"
+            group: "26"
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: ${{ matrix.ref }}
+          ref: ${{ matrix.version }}
       - uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: ${{ matrix.java }}
+          java-version: ${{ startsWith(matrix.version, '26.') && '25' || ((matrix.version == '1.20.5' || matrix.version == '1.20.6' || startsWith(matrix.version, '1.21')) && '21' || '17') }}
       - uses: gradle/actions/setup-gradle@v6
         with:
-          gradle-version: ${{ matrix.gradle }}
+          gradle-version: ${{ ${{ matrix.group == '1.20' && '8.8' || matrix.group == '1.21' && '9.5.1' || '9.5.0' }} }}
       - name: Build
-        run: gradle clean build --no-daemon --stacktrace --refresh-dependencies -Pmod_version="${{ inputs.release_version }}" -Pminecraft_version="${{ matrix.mc }}" -Pforge_version="${{ matrix.forge }}"
-      - name: Verify JAR
+        env:
+          VERSION: ${{ matrix.version }}
+          RELEASE_VERSION: ${{ inputs.release_version }}
         run: |
           set -euo pipefail
-          shopt -s nullglob
-          jars=(build/libs/*.jar)
-          test "${#jars[@]}" -gt 0
-          printf '%s\n' "${jars[@]}"
-      - name: Release version
-        uses: softprops/action-gh-release@v3
+          forge=$(curl -fsSL https://maven.minecraftforge.net/net/minecraftforge/forge/ | grep -oE 'href="'$VERSION'-[^"]+/"' | sed -E 's/href="([^"]+)"/\1/' | sed 's#/$##' | sed "s#^$VERSION-##" | sort -V | tail -1)
+          test -n "$forge"
+          gradle clean build --no-daemon --stacktrace --refresh-dependencies -Pmod_version="$RELEASE_VERSION" -Pminecraft_version="$VERSION" -Pforge_version="$forge"
+          jar=$(find build/libs -maxdepth 1 -type f -name '*.jar' ! -name '*sources*' | head -n1)
+          test -n "$jar"
+          cp "$jar" "netflared-server-forge-$VERSION.jar"
+      - uses: actions/upload-artifact@v4
         with:
-          tag_name: "v${{ inputs.release_version }}-forge-${{ matrix.mc }}"
-          name: "Netflared Server ${{ inputs.release_version }} — forge ${{ matrix.mc }}"
-          target_commitish: ${{ matrix.ref }}
+          name: forge-${{ matrix.version }}
+          path: netflared-server-forge-${{ matrix.version }}.jar
+
+  release:
+    name: Release Forge ${{ matrix.group }}
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        group: ["1.20","1.21","26"]
+    steps:
+      - uses: actions/download-artifact@v5
+        with:
+          pattern: forge-${{ matrix.group }}*
+          path: grouped
+          merge-multiple: true
+      - uses: softprops/action-gh-release@v3
+        with:
+          tag_name: v${{ inputs.release_version }}-forge-${{ matrix.group }}
+          name: Netflared Server ${{ inputs.release_version }} — Forge ${{ matrix.group }}
           generate_release_notes: false
-          files: build/libs/*.jar
+          files: grouped/*.jar
