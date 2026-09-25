@@ -16,6 +16,6 @@ side="SERVER"
 [[dependencies.netflared]]
 modId="minecraft"
 mandatory=true
-versionRange="[${minecraft_version}]"
+versionRange="[1.21,1.22)"
 ordering="NONE"
 side="SERVER"
