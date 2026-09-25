@@ -1,9 +1,9 @@
 plugins { id 'java'; id 'net.minecraftforge.gradle' version '6.0.46' }
 group='com.matejpcs.netflared'
-version=project.findProperty('mod_version') ?: '0.1.1-SNAPSHOT'
-def mc=project.findProperty('minecraft_version') ?: '1.20.1'
-def forge=project.findProperty('forge_version') ?: '47.4.23'
-def javaVersion=mc in ['1.20.5','1.20.6'] ? 21 : 17
+version=project.findProperty('mod_version') ?: '0.1.4-SNAPSHOT'
+def mc=project.findProperty('minecraft_version') ?: '1.21.11'
+def forge=project.findProperty('forge_version') ?: '61.2.1'
+def javaVersion=21
 java.toolchain.languageVersion=JavaLanguageVersion.of(javaVersion)
 minecraft { mappings channel:'official', version:mc; copyIdeResources=true; runs { server { workingDirectory project.file('run'); args '--nogui' } } }
 repositories { mavenCentral() }
