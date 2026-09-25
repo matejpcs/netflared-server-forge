@@ -1,0 +1,21 @@
+modLoader="javafml"
+loaderVersion="[46,)"
+license="MIT"
+[[mods]]
+modId="netflared"
+version="${version}"
+displayName="Netflared Server"
+description="Cloudflare Tunnel management for Minecraft servers."
+authors="matejpcs"
+[[dependencies.netflared]]
+modId="forge"
+mandatory=true
+versionRange="[46,)"
+ordering="NONE"
+side="SERVER"
+[[dependencies.netflared]]
+modId="minecraft"
+mandatory=true
+versionRange="[${minecraft_version}]"
+ordering="NONE"
+side="SERVER"
