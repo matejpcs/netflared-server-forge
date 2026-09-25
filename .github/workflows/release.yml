@@ -158,3 +158,5 @@ jobs:
           name: Netflared Server ${{ inputs.release_version }} — Forge ${{ matrix.group }}
           generate_release_notes: false
           files: grouped/*.jar
+
+# CI validation trigger
