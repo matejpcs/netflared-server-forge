@@ -1,12 +1,32 @@
-plugins { id 'java'; id 'net.minecraftforge.gradle' version '6.0.46' }
+plugins { id 'java'; id 'idea'; id 'eclipse'; id 'maven-publish'; id 'net.minecraftforge.gradle' version '[7.0.29,8.0)' }
 group='com.matejpcs.netflared'
-version=project.findProperty('mod_version') ?: '0.1.4-SNAPSHOT'
+version=project.findProperty('mod_version') ?: '0.1.7-SNAPSHOT'
 def mc=project.findProperty('minecraft_version') ?: '1.21.11'
 def forge=project.findProperty('forge_version') ?: '61.2.1'
-def javaVersion=21
-java.toolchain.languageVersion=JavaLanguageVersion.of(javaVersion)
-minecraft { mappings channel:'official', version:mc; copyIdeResources=true; runs { server { workingDirectory project.file('run'); args '--nogui' } } }
-repositories { maven { url='https://maven.minecraftforge.net' }; mavenCentral() }
-dependencies { minecraft "net.minecraftforge:forge:" + mc + "-" + forge; implementation 'com.google.code.gson:gson:2.13.2' }
-tasks.withType(JavaCompile).configureEach { options.encoding='UTF-8'; options.release=javaVersion }
+java.toolchain.languageVersion=JavaLanguageVersion.of(21)
+minecraft {
+ mappings channel:'official', version:mc
+ accessTransformer = true
+ runs {
+  configureEach {
+   workingDir project.file('run')
+   systemProperty 'forge.logging.console.level', 'debug'
+  }
+  server {
+   args '--nogui'
+  }
+ }
+}
+repositories {
+ minecraft.mavenizer(it)
+ maven fg.forgeMaven
+ maven fg.minecraftLibsMaven
+ mavenCentral()
+}
+dependencies {
+ implementation minecraft.dependency('net.minecraftforge:forge:' + mc + '-' + forge)
+ annotationProcessor 'net.minecraftforge:eventbus-validator:7.0.5'
+ implementation 'com.google.code.gson:gson:2.13.2'
+}
+tasks.withType(JavaCompile).configureEach { options.encoding='UTF-8'; options.release=21 }
 jar { archiveBaseName='netflared-server-forge' }
