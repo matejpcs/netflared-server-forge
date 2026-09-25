@@ -139,7 +139,7 @@ jobs:
           name: forge-${{ matrix.version }}
           path: netflared-server-forge-${{ matrix.version }}.jar
   release:
-    if: ${{ github.event_name == 'workflow_dispatch' }}
+    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
     name: Release Forge ${{ matrix.group }}
     needs: build
     runs-on: ubuntu-latest
@@ -154,8 +154,8 @@ jobs:
           merge-multiple: true
       - uses: softprops/action-gh-release@v3
         with:
-          tag_name: v${{ inputs.release_version }}-forge-${{ matrix.group }}
-          name: Netflared Server ${{ inputs.release_version }} — Forge ${{ matrix.group }}
+          tag_name: v${{ inputs.release_version || '0.1.13' }}-forge-${{ matrix.group }}
+          name: Netflared Server ${{ inputs.release_version || '0.1.13' }} — Forge ${{ matrix.group }}
           generate_release_notes: false
           files: grouped/*.jar
 
