@@ -8,15 +8,6 @@ java.toolchain.languageVersion=JavaLanguageVersion.of(21)
 minecraft {
  mappings channel:'official', version:mc
  accessTransformer = true
- runs {
-  configureEach {
-   workingDir project.file('run')
-   systemProperty 'forge.logging.console.level', 'debug'
-  }
-  server {
-   args '--nogui'
-  }
- }
 }
 repositories {
  minecraft.mavenizer(it)
