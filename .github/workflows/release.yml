@@ -1,5 +1,7 @@
 name: Build & Release Forge all versions
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
     inputs:
       release_version:
@@ -124,7 +126,7 @@ jobs:
       - name: Build
         env:
           VERSION: ${{ matrix.version }}
-          RELEASE_VERSION: ${{ inputs.release_version }}
+          RELEASE_VERSION: ${{ inputs.release_version || '0.1.13' }}
           FORGE_VERSION: ${{ steps.deps.outputs.forge }}
         run: |
           set -euo pipefail
@@ -137,6 +139,7 @@ jobs:
           name: forge-${{ matrix.version }}
           path: netflared-server-forge-${{ matrix.version }}.jar
   release:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     name: Release Forge ${{ matrix.group }}
     needs: build
     runs-on: ubuntu-latest
