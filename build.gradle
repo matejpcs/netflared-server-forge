@@ -17,8 +17,6 @@ repositories {
 }
 dependencies {
  implementation minecraft.dependency('net.minecraftforge:forge:' + mc + '-' + forge)
-
- implementation 'com.google.code.gson:gson:2.13.2'
 }
 tasks.withType(JavaCompile).configureEach { options.encoding='UTF-8'; options.release=21 }
 processResources {
