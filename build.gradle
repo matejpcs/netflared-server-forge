@@ -4,7 +4,6 @@ version=project.findProperty('mod_version') ?: '0.1.8-SNAPSHOT'
 def mc=project.findProperty('minecraft_version') ?: '26.2'
 def forge=project.findProperty('forge_version') ?: '65.0.0'
 java.toolchain.languageVersion=JavaLanguageVersion.of(25)
-minecraft { runs { server { workingDir project.file('run'); args '--nogui' } } }
 repositories { minecraft.mavenizer(it); maven fg.forgeMaven; maven fg.minecraftLibsMaven; mavenCentral() }
 dependencies { implementation minecraft.dependency('net.minecraftforge:forge:' + mc + '-' + forge) }
 tasks.withType(JavaCompile).configureEach { options.encoding='UTF-8' }
