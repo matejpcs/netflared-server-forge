@@ -6,7 +6,7 @@ def forge=project.findProperty('forge_version') ?: '61.2.1'
 def javaVersion=21
 java.toolchain.languageVersion=JavaLanguageVersion.of(javaVersion)
 minecraft { mappings channel:'official', version:mc; copyIdeResources=true; runs { server { workingDirectory project.file('run'); args '--nogui' } } }
-repositories { mavenCentral() }
+repositories { maven { url='https://maven.minecraftforge.net' }; mavenCentral() }
 dependencies { minecraft "net.minecraftforge:forge:" + mc + "-" + forge; implementation 'com.google.code.gson:gson:2.13.2' }
 tasks.withType(JavaCompile).configureEach { options.encoding='UTF-8'; options.release=javaVersion }
 jar { archiveBaseName='netflared-server-forge' }
