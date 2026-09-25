@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[51,)"
+loaderVersion="[65,)"
 license="MIT"
 [[mods]]
 modId="netflared"
@@ -10,12 +10,12 @@ authors="matejpcs"
 [[dependencies.netflared]]
 modId="forge"
 mandatory=true
-versionRange="[51,)"
+versionRange="[65,)"
 ordering="NONE"
 side="SERVER"
 [[dependencies.netflared]]
 modId="minecraft"
 mandatory=true
-versionRange="[${minecraft_version}]"
+versionRange="[26.2]"
 ordering="NONE"
 side="SERVER"
