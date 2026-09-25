@@ -1,8 +1,9 @@
 plugins { id 'java'; id 'idea'; id 'eclipse'; id 'maven-publish'; id 'net.minecraftforge.gradle' version '[7.0.29,8.0)' }
 group='com.matejpcs.netflared'
-version=project.findProperty('mod_version') ?: '0.1.9-SNAPSHOT'
+version=project.findProperty('mod_version') ?: '0.1.10-SNAPSHOT'
 def mc=project.findProperty('minecraft_version') ?: '1.21.11'
 def forge=project.findProperty('forge_version') ?: '61.2.1'
+def forgeMajor=forge.tokenize('.')[0]
 java.toolchain.languageVersion=JavaLanguageVersion.of(21)
 minecraft {
  mappings channel:'official', version:mc
@@ -29,4 +30,8 @@ dependencies {
  implementation 'com.google.code.gson:gson:2.13.2'
 }
 tasks.withType(JavaCompile).configureEach { options.encoding='UTF-8'; options.release=21 }
+processResources {
+ inputs.properties(version:project.version, minecraft_version:mc, forge_major:forgeMajor)
+ filesMatching('META-INF/mods.toml') { expand(version:project.version, minecraft_version:mc, forge_major:forgeMajor) }
+}
 jar { archiveBaseName='netflared-server-forge' }
