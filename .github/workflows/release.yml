@@ -160,3 +160,4 @@ jobs:
           files: grouped/*.jar
 
 # CI validation trigger
+# Re-run matrix after version-specific source fixes
